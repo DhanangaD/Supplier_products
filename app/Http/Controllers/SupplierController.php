@@ -17,14 +17,13 @@ class SupplierController extends Controller
                   ->orWhere('mobile_numbers', 'like', "%{$search}%");
         }
     
+        // Get all suppliers matching the search
         $suppliers = $query->select('id', 'name', 'contact_person', 'mobile_numbers')
-                           ->paginate(20);
+                           ->get();
     
         return response()->json($suppliers);
     }
-    
-    
-    
+
     
     //func for add supplier--------------------------------------------------------
     public function store(Request $request)
