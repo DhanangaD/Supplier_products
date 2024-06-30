@@ -11,16 +11,21 @@ class SupplierController extends Controller
     public function index(Request $request)
     {
         $query = Supplier::query();
-
+    
         if ($search = $request->input('search')) {
             $query->where('name', 'like', "%{$search}%")
                   ->orWhere('mobile_numbers', 'like', "%{$search}%");
         }
-
-        $suppliers = $query->with('products')->paginate(20);
+    
+        $suppliers = $query->select('id', 'name', 'contact_person', 'mobile_numbers')
+                           ->paginate(20);
+    
         return response()->json($suppliers);
     }
-
+    
+    
+    
+    
     //func for add supplier--------------------------------------------------------
     public function store(Request $request)
     {
