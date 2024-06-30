@@ -38,12 +38,16 @@ export default {
     },
     methods: {
         async fetchSuppliers(pageUrl = '/api/suppliers') {
-            const response = await axios.get(pageUrl, {
-                params: { search: this.search },
-            });
-            this.suppliers = response.data.data;
-            this.pagination.next = response.data.next_page_url;
-            this.pagination.prev = response.data.prev_page_url;
+            try {
+                const response = await axios.get(pageUrl, {
+                    params: { search: this.search },
+                });
+                this.suppliers = response.data.data;
+                this.pagination.next = response.data.next_page_url;
+                this.pagination.prev = response.data.prev_page_url;
+            } catch (error) {
+                console.error('Error fetching suppliers:', error);
+            }
         },
         nextPage() {
             if (this.pagination.next) this.fetchSuppliers(this.pagination.next);
@@ -54,6 +58,11 @@ export default {
     },
     mounted() {
         this.fetchSuppliers();
+    },
+    watch: {
+        search() {
+            this.fetchSuppliers();
+        },
     },
 };
 </script>

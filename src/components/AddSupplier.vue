@@ -40,7 +40,7 @@ export default {
         },
         async addSupplier() {
             try {
-                await axios.post('/api/suppliers', { ...this.supplier, products: this.products });
+                await axios.post('http://localhost:8000/suppliers', { ...this.supplier, products: this.products });
                 
                 // Log supplier and products data to console
                 console.log('Supplier:', this.supplier);
