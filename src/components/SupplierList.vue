@@ -208,7 +208,17 @@
   }
   
   button {
+    padding: 10px;
+    margin-bottom: 8px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    padding-bottom: 3px;
     padding: 10px 15px;
+    margin-right: 10px; /* Optional: Add margin between buttons */
     border: none;
     border-radius: 4px;
     background-color: #007bff;
