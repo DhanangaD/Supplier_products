@@ -9,11 +9,53 @@
       <div v-for="(supplier, index) in paginatedSuppliers" :key="index" class="supplier-card">
         <h3>{{ supplier.name }}</h3>
         <p>{{ supplier.contact_person }} - {{ supplier.mobile_numbers }}</p>
+        <button @click="editSupplier(supplier)">Edit</button>
+        <button @click="deleteSupplier(supplier)">Delete</button>
       </div>
       <div class="pagination">
         <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
         <span>{{ currentPage }}</span>
         <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+      </div>
+  
+      <!-- Modal for adding/updating supplier -->
+      <div class="modal" :class="{ 'is-active': isModalActive }">
+        <div class="modal-background" @click="closeModal"></div>
+        <div class="modal-content">
+          <div class="box">
+            <h2>{{ modalTitle }}</h2>
+            <form @submit.prevent="saveSupplier">
+              <div class="field">
+                <label class="label">Name</label>
+                <div class="control">
+                  <input v-model="formData.name" class="input" type="text" required>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Contact Person</label>
+                <div class="control">
+                  <input v-model="formData.contact_person" class="input" type="text" required>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Mobile Numbers</label>
+                <div class="control">
+                  <input v-model="formData.mobile_numbers" class="input" type="text" required>
+                </div>
+              </div>
+              <!-- Add more fields here as needed -->
+              <div class="field is-grouped">
+                <div class="control">
+                  <button type="submit" class="button is-primary">{{ submitButtonText }}</button>
+                </div>
+                <div class="control">
+                  <button @click="closeModal" class="button is-link">Cancel</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close" @click="closeModal"></button>
       </div>
     </div>
   </template>
@@ -28,6 +70,15 @@
         search: "",
         currentPage: 1,
         pageSize: 20, // Number of items per page
+        formData: {
+          id: null,
+          name: "",
+          contact_person: "",
+          mobile_numbers: "",
+          // Add more fields as needed
+        },
+        isModalActive: false,
+        submitButtonText: "Add Supplier",
       };
     },
     created() {
@@ -54,6 +105,51 @@
         if (this.currentPage > 1) {
           this.currentPage--;
         }
+      },
+      editSupplier(supplier) {
+        this.formData.id = supplier.id;
+        this.formData.name = supplier.name;
+        this.formData.contact_person = supplier.contact_person;
+        this.formData.mobile_numbers = supplier.mobile_numbers;
+        // Assign more fields as needed
+  
+        this.submitButtonText = "Update Supplier";
+        this.isModalActive = true;
+      },
+      async saveSupplier() {
+        try {
+          if (this.formData.id) {
+            // Update existing supplier
+            await axios.put(`/api/suppliers/${this.formData.id}`, this.formData);
+          } else {
+            // Add new supplier
+            await axios.post(`/api/suppliers`, this.formData);
+          }
+          this.closeModal();
+          this.searchSuppliers(); // Refresh supplier list after save
+        } catch (error) {
+          console.error("Error saving supplier:", error);
+        }
+      },
+      async deleteSupplier(supplier) {
+        try {
+          if (confirm(`Are you sure you want to delete ${supplier.name}?`)) {
+            await axios.delete(`/api/suppliers/${supplier.id}`);
+            this.searchSuppliers(); // Refresh supplier list after delete
+          }
+        } catch (error) {
+          console.error("Error deleting supplier:", error);
+        }
+      },
+      closeModal() {
+        this.formData.id = null;
+        this.formData.name = "";
+        this.formData.contact_person = "";
+        this.formData.mobile_numbers = "";
+        // Clear more fields as needed
+  
+        this.submitButtonText = "Add Supplier";
+        this.isModalActive = false;
       },
     },
     computed: {
@@ -128,5 +224,57 @@
   
   button:hover:enabled {
     background-color: #0056b3;
+  }
+  
+  .modal {
+    display: none;
+  }
+  
+  .modal.is-active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .modal-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background-color: transparent;
+  }
+  
+  .modal-content {
+    position: relative;
+    width: 60%;
+    max-width: 600px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    z-index: 1001;
+    color: #000;
+  }
+  
+  .modal-close:hover {
+    color: #333;
   }
   </style>  
