@@ -6,9 +6,14 @@
         placeholder="Search by Name or Mobile"
         class="search-input"
       />
-      <div v-for="supplier in suppliers" :key="supplier.id" class="supplier-card">
+      <div v-for="(supplier, index) in paginatedSuppliers" :key="index" class="supplier-card">
         <h3>{{ supplier.name }}</h3>
         <p>{{ supplier.contact_person }} - {{ supplier.mobile_numbers }}</p>
+      </div>
+      <div class="pagination">
+        <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+        <span>{{ currentPage }}</span>
+        <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
       </div>
     </div>
   </template>
@@ -21,6 +26,8 @@
       return {
         suppliers: [],
         search: "",
+        currentPage: 1,
+        pageSize: 20, // Number of items per page
       };
     },
     created() {
@@ -32,10 +39,30 @@
           const response = await axios.get('/api/suppliers', {
             params: { search: this.search },
           });
-          this.suppliers = response.data.data; // Adjust according to your API response structure
+          this.suppliers = response.data; // Assuming your API response structure includes all suppliers
+          this.currentPage = 1; // Reset current page when searching
         } catch (error) {
           console.error("Error fetching suppliers:", error);
         }
+      },
+      nextPage() {
+        if (this.currentPage < this.totalPages) {
+          this.currentPage++;
+        }
+      },
+      prevPage() {
+        if (this.currentPage > 1) {
+          this.currentPage--;
+        }
+      },
+    },
+    computed: {
+      totalPages() {
+        return Math.ceil(this.suppliers.length / this.pageSize);
+      },
+      paginatedSuppliers() {
+        const startIndex = (this.currentPage - 1) * this.pageSize;
+        return this.suppliers.slice(startIndex, startIndex + this.pageSize);
       },
     },
   };
@@ -77,5 +104,29 @@
     margin: 0 0 10px;
     color: #555;
   }
-  </style>
   
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  button:hover:enabled {
+    background-color: #0056b3;
+  }
+  </style>  
