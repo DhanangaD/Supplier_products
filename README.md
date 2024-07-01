@@ -4,7 +4,7 @@
 A simple system to manage suppliers and their products using Laravel for the backend and Vue.js for the frontend.
 
 ## Installation
-
+Firstly run xampp apche and mysql servers.
 ### Backend (Laravel)
 1. Clone the repository `backend` branch.
 2. Run `composer install`.
