@@ -6,15 +6,14 @@ A simple system to manage suppliers and their products using Laravel for the bac
 ## Installation
 
 ### Backend (Laravel)
-1. Clone the repository.
-2. Navigate to the `backend` directory.
-3. Run `composer install`.
-4. Set up your `.env` file with relevant database name and type.
-5. Run `php artisan migrate --seed`.
-6. Run `php artisan serve`.
+1. Clone the repository `backend` branch.
+2. Run `composer install`.
+3. Set up your `.env` file with relevant database name and type.
+4. Run `php artisan migrate --seed`.
+5. Run `php artisan serve`.
 
 ### Frontend (Vue.js)
-1. Navigate to the `frontend` directory.
+1.  Clone the repository `frontend` branch.
 2. Run `npm install`.
 3. Run `npm run serve`.
 
